@@ -463,7 +463,7 @@ namespace HW1
             // DFS 的設定
             int row_count = img_history[step_counter + 1].Width;
             int col_count = img_history[step_counter + 1].Height; // 要記得設定
-            int[] dx = {+1, 0, -1, 0, +1, -1, -1, +1};
+            int[] dx = {+1, 0, -1, 0, +1, -1, -1, +1}; // 搜尋的方向
             int[] dy = {0, +1, 0, -1, +1, +1, -1, -1};
             int[,] label = new int[row_count, col_count];
             int component = 0;
@@ -472,7 +472,7 @@ namespace HW1
             {
                 for (int x = 0; x < img_history[step_counter].Width; x++)
                 {
-                    if (label[x, y]==0 & graph[x, y]==1) dfs(x, y, ++component); // component: 1~N
+                    if (label[x, y]==0 & graph[x, y]==1) bfs(x, y, ++component); // component: 1~N
                 }
             }
             Console.WriteLine(component);
@@ -490,7 +490,32 @@ namespace HW1
             this.pictureBox2.Image = img_history[step_counter];
             this.registration_label.Visible = true;
             this.registration_label.Text = "Num of components: " + component.ToString("0.##");
+            void bfs(int x_first, int y_first, int current_label)
+            {
+                Point first = new Point(x_first, y_first);
+                Queue<Point> queue = new Queue<Point>();
+                queue.Enqueue(first);
+                while (queue.Count > 0)
+                {
+                    Point temp = queue.Dequeue();
+                    for (int direction=0; direction<8; direction++)
+                    {
+                        int x = temp.X + dx[direction];
+                        int y = temp.Y + dy[direction];
 
+                        if (x < 0 || x == row_count || y < 0 || y == col_count || label[x, y] != 0 || graph[x, y] == 0) // out of bounds
+                            continue; 
+                        else // add into queue, set label number 
+                        {
+                            label[x, y] = current_label; // mark the current cell
+                            Point ready = new Point(x, y);
+                            queue.Enqueue(ready);
+                        }
+                    }
+                }
+
+
+            }
             void dfs(int x, int y, int current_label)
             {
                 if (x < 0 || x == row_count) return; // out of bounds
@@ -634,10 +659,13 @@ namespace HW1
             return angle;
         }
 
+        // Save image 
         private void Save_Btn_Click(object sender, EventArgs e)
         {
             
             SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Bitmap Files (.bmp)|*.bmp";
+            sfd.FileName = ".bmp";
             if(sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 img_history[step_counter].Save(sfd.FileName);
