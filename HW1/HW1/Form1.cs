@@ -216,7 +216,7 @@ namespace HW1
                 {
                     double densitySum = 0;
                     Color value = grayImage.GetPixel(x, y);
-                    for (int k = 0; k <= value.R; k++)
+                    for (int k = 0; k <= value.R; k++) 
                     {    //累積機率
                         densitySum += density[k];
                     }
